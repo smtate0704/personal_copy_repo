@@ -1,0 +1,221 @@
+---
+title: "ENVS 193DS Workshop 7"
+date: 2024-05-15
+author: "insert your name here"
+format: html
+---
+
+# Set up
+
+First, make sure your name is in the `author:` field at the top of this document.  
+
+Second, install the following packages (remember to do this in your Console):  
+
+- `here`: read about it at [this link](https://here.r-lib.org/)  
+- `ggeffects`: read about it at [this link](https://strengejacke.github.io/ggeffects/)
+
+Third, read in your packages and data.
+
+```{r packages-and-data}
+library(tidyverse) # general use
+library(here) # file organization
+library(ggeffects) # model predictions
+library(flextable) # creating tables
+
+abalone <- read_csv(here("data", "abalone_growth.csv"))
+```
+
+Look at the file structure in this repository.  
+
+Where is this `.qmd` file? Where is the `abalone_growth.csv` file?  
+
+_insert response here_  
+
+Note the file path within the `read_csv()` function. How is this different from how we've stored and read data before?  
+
+_insert response here_  
+
+**COMMIT AND PUSH YOUR CHANGES!**
+
+# 1. Look at your data.
+
+Look at your data. Here's three different ways of looking at your data:
+
+```{r using-str}
+str(abalone)
+```
+
+```{r using-glimpse}
+glimpse(abalone)
+```
+
+```{r using-class}
+class(abalone)
+```
+
+Compare the three ways of looking at data below. What's different about the outputs, and what's similar?  
+
+_insert response below_
+
+**COMMIT AND PUSH YOUR CHANGES!**
+
+Then, visualize your data.  
+
+Annotate the code to make `abalone_plot`. Make the plot look better by:  
+
+1. changing the size of the points so that they're larger and easier to see  
+2. making the background of the panel white with no gridlines  
+
+```{r prelim-data-visualization}
+abalone_plot <- ggplot(data = abalone,
+                       aes(x = temperature,
+                           y = growth)) +
+  geom_point()
+
+abalone_plot
+```
+
+**COMMIT AND PUSH YOUR CHANGES!**
+
+# 2. Write out your model.
+
+Write your model in words:  
+
+_model in words here_  
+
+Annotate the code to create the model object `abalone_model`.
+
+```{r abalone-model}
+abalone_model <- lm(growth ~ temperature,
+                    data = abalone)
+```
+
+**COMMIT AND PUSH YOUR CHANGES!**
+
+# 3. Look at the diagnostic plots.
+
+Look at the four diagnostic plots for this model. Annotate the code.
+
+```{r abalone-model-diagnostics}
+par(mfrow = c(2, 2))
+plot(abalone_model)
+```
+
+**Note:** Sometimes it is hard to see diagnostics in a small window. Open up a larger version of the plot by clicking "Zoom" in the "Plots" tab in the lower right.
+
+# 4. Look at the model coefficients.
+
+Use `summary()` to look at the model coefficients (slope and intercept) and standard error (precision of the coefficient).
+
+```{r abalone-model-summary}
+summary(abalone_model) 
+```
+
+Make a note of the y-intercept and slope estimates below with the standard error. Round the estimate and standard error to two decimal places.    
+
+_Slope: insert slope and SE here_  
+_y-intercept: insert intercept and SE here_  
+
+**COMMIT AND PUSH YOUR CHANGES!**
+
+# 5. Visualize the model predictions.
+
+Get the model predictions using `ggeffect::ggpredict()`.  
+
+Annotate the code below.
+
+```{r abalone-model-predictions}
+model_preds <- ggpredict(abalone_model,
+                         terms = "temperature")
+```
+
+Look at the `model_preds` object in two ways: using `View(model_preds)` in your console and by displaying the output just running `model_preds`.  
+
+Compare the two outputs. How are they different?  
+
+_compare outputs here_  
+
+**Note:** you can rename columns in your object from `ggpredict()` to make the data frame easier to work with. For example, you can change `x` to whatever your `x` variable is (in this case, `temperature`), and `predicted` to whatever your `y` variable is (in this case, `growth`). If you do this, you'll have to modify the code below to run.  
+
+**COMMIT AND PUSH YOUR CHANGES!**
+
+Then, plot the data with the model predictions. Annotate the code below. Change the plot by:  
+
+1. changing the size of the points so that they're larger and easier to see  
+2. changing the shape of the points to be open circles so that attention is drawn to the model prediction line  
+3. changing the color of the points to be different from the line  
+4. making the background of the panel white with no gridlines  
+
+```{r abalone-model-plot}
+abalone_model_plot <- ggplot(data = abalone,
+                             aes(x = temperature,
+                                 y = growth)) +
+  geom_point() +
+  geom_ribbon(data = model_preds,
+              aes(x = x,
+                  y = predicted,
+                  ymin = conf.low,
+                  ymax = conf.high),
+              alpha = 0.2) +
+  geom_line(data = model_preds,
+            aes(x = x,
+                y = predicted),
+            linewidth = 1)
+
+
+abalone_model_plot
+```
+
+Create a new folder in this repository called `images`.  
+
+Use `ggsave()` to save `abalone_model_plot` as a .jpg in `images`.  
+
+Annotate the code below.
+
+```{r abalone-plot-save}
+ggsave(filename = here("images", "abalone_model_plot.jpg"),
+       width = 10,
+       height = 8,
+       units = "cm")
+```
+
+
+**COMMIT AND PUSH YOUR CHANGES!**
+
+Then, calculate the correlation between temperature and growth.  
+
+```{r abalone-correlation-test}
+cor.test(abalone$temperature, abalone$growth,
+         method = "pearson")
+```
+
+# 6. Describe your model.
+
+Using your notes, write 2-4 sentences about the model results. Start with a broad overarching result (model significance and correlation), then describe specifics of the model estimates (slope and coefficient if relevant), and model predictions (at a specific predictor value, the model predicts _____ response value).  
+
+_write about your model here_ 
+
+**COMMIT AND PUSH YOUR CHANGES!**  
+
+# 7. Render your document and set up GitHub Pages for this repository.
+
+See the [Git/GitHub resource](https://spring-2024.envs-193ds.com/resources/using-github#using-github-pages-to-display-rendered-.html-output) to set up GitHub Pages.  
+
+Find the url for your rendered .html document. Make sure it looks like `yourgithubusername.github.io/repo/filepath/filename.html`. Enter it below.  
+
+_enter your url here_  
+
+**COMMIT AND PUSH YOUR CHANGES!**  
+
+# 8. Write an informative README.
+
+Read the [README resource](https://spring-2024.envs-193ds.com/resources/writing-a-readme) (also on Canvas for reference).  
+
+Find the `README` in this repository in RStudio.  
+
+Write sections for: "General information", "Data and file overview", and "Rendered output".    
+
+In your "Rendered output" section, include the link to the rendered .html document as a hyperlink.  
+
+**COMMIT AND PUSH YOUR CHANGES!**  
+
