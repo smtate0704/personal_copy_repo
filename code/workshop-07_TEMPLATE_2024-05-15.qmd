@@ -173,7 +173,7 @@ Use `ggsave()` to save `abalone_model_plot` as a .jpg in `images`.
 Annotate the code below.
 
 ```{r abalone-plot-save}
-ggsave(filename = here("images", "abalone_model_plot.jpg"),
+ggsave(filename = here("abalone_model_plot.jpg"),
        width = 10,
        height = 8,
        units = "cm")
